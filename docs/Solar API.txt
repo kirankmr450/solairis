@@ -1,0 +1,10 @@
+1. Site details - https://api.myjson.com/bins/exlkp
+2. Customer address - https://api.myjson.com/bins/djwat
+3. Customer details - https://api.myjson.com/bins/10jfyt
+4. Asset Tracking - https://api.myjson.com/bins/kqfh5
+5. Alarm deatils - https://api.myjson.com/bins/emrdh
+6. Fetch add site deatils - https://api.myjson.com/bins/168vvl
+7. Fetch add Site Engineer details - https://api.myjson.com/bins/rhjsh
+8. Fetch add Maintainence Engineer details - https://api.myjson.com/bins/1a29v5
+9. Ticket details - https://api.myjson.com/bins/15r2r1
+10. Auto generated tiles for site details - https://api.myjson.com/bins/r0ga5
