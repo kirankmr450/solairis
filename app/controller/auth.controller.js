@@ -3,7 +3,7 @@ var passport = require("passport");
 var moment = require("moment");
 var Strategy = require("passport-jwt").Strategy;
 var ExtractJwt = require("passport-jwt").ExtractJwt;
-var UserModel = require("../model/user.model");
+var UserModel = require("../model/user.model").userModel;
 var UserCtrl = require('./user.controller');
 var Error = require('../error/error');
 // Use Password Generator https://www.lastpass.com/password-generator
@@ -82,10 +82,10 @@ exports.login = async (req, res, next) => {
     try {
         if (Object.keys(req.body).length === 0) 
             throw Error.UserError('Request body is missing');
-        if (!req.body.username) throw Error.UserError("Mandatory field 'username' missing.");
+        if (!req.body.email) throw Error.UserError("Mandatory field 'email' missing.");
         if (!req.body.password) throw Error.UserError("Mandatory field 'password' missing.");
         
-        let user = await UserModel.findOne({ "username": req.body.username }).exec();
+        let user = await UserModel.findOne({ email: req.body.email }).exec();
         if (user === null) throw Error.AuthenticationError('Incorrect credentials');
         // Handle inactive user
         if (user.active === false) throw Error.ForbiddenError('Account deactivated.'); 
@@ -93,7 +93,6 @@ exports.login = async (req, res, next) => {
         if (success === false) throw Error.AuthenticationError('Incorrect credentials');
         res.status(200).json(genToken(user, user.isNewUser));
     } catch (e) {
-        if (!(e instanceof Error)) return next(Error.SystemError('Server Error'));
         next(e);
     }
 }
@@ -157,16 +156,36 @@ var getStrategy = () => {
     };
 
     // Note that the 'payload' is the payload packed in the token.
-    return new Strategy(params, (req, payload, done) => {
-        UserModel.findById(payload.userid, (err, user) => {
-            if (err) return done(err);
+    return new Strategy(params, async (req, payload, done) => {
+        try {
+            var user = await UserModel.findById(payload.userid);
             if (user === null) return done(null, false, { message: "The user in the token was not found" });
             
             // If user is inactive, throw error.
             if (!user.active) return done(Error.ForbiddenError('Insufficient access'));
-
+            
             // Returns User object in app for user to inspect.
-            return done(null, { id: user._id, isNewUser: user.isNewUser, role: user.role });
-        });
+            return done(null, { id: user._id, 
+                                type: user.type,
+                                role: user.role,
+                                customerId: user.customerid
+                              }
+                       );
+        } catch (err) {
+            done(err);
+        }
     });
+        
+        
+//        , (err, user) => {
+//            if (err) return done(err);
+//            if (user === null) return done(null, false, { message: "The user in the token was not found" });
+//            
+//            // If user is inactive, throw error.
+//            if (!user.active) return done(Error.ForbiddenError('Insufficient access'));
+//
+//            // Returns User object in app for user to inspect.
+//            return done(null, { id: user._id, isNewUser: user.isNewUser, role: user.role });
+//        });
+//    });
 }

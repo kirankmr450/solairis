@@ -23,10 +23,7 @@ var meterSchema = new Schema({
 
 var siteSchema = new Schema({
     name: String,
-    users: [{
-        userId: Schema.Types.ObjectId,
-        role: String
-    }],
+    customerid: Schema.Types.ObjectId,
     capacityInKW: Number,
     panelCount: Number,
     battriesCount: Number,

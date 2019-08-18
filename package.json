@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "//": "npm run start-watch",
+    "start": "node src/index.js",
+    "start-watch": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Neeraj Nayan",

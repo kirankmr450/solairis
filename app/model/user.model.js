@@ -1,25 +1,31 @@
 var mongoose = require('mongoose');
+var bcrypt = require('bcryptjs');
 var Schema = mongoose.Schema;
 
-module.exports.userType = { Internal: 'internal-user', 
-                            External: 'external-user' };
+module.exports.userType = { Root: 'Root', 
+                            Internal: 'Internal', 
+                            External: 'External' };
 module.exports.userRole = {
-    'Internal': {Root: 'Root', Admin: 'Admin', Operator: 'Operator'},
-    'External': {Admin: 'CustomerAdmin', 
+    'Internal': {Admin: 'Admin', Operator: 'Operator'},
+    'External': {CustomerAdmin: 'CustomerAdmin', 
                  SiteAdmin: 'SiteAdmin', 
-                 Engineer: 'SiteEngineer', 
+                 SiteEngineer: 'SiteEngineer', 
                  /* No role assigned yet */
-                 NotAssigned: 'NA'}
+                 NotAssigned: 'NotAssigned'}
 };
 module.exports.userRole.Root = 'Root';
 
 var userSchema = new Schema({
     name: { type: String, required: true },
     type: { type: String, required: true },
+    // Role is optional and needed for only Internal Type
+    // For External user role is specified in the Site/Customer
+    role: { type: String },
+    customerid: Schema.Types.ObjectId,
     email: { type: String, required: true, unique: true },
     phonenumber: String,
     password: { type: String, required: true },
-    isNewUser: { type: Boolean, required: true },
+    isnewuser: { type: Boolean, required: true },
     active: { type: Boolean, required: true }
 }, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
@@ -54,4 +60,4 @@ userSchema.methods.comparePassword = function(candidatePassword) {
     });
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports.userModel = mongoose.model('User', userSchema);
